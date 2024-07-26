@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -18,17 +18,25 @@ class ToDo(db.Model):
 
 @app.route("/")
 def to_do_list():
-    return render_template("todo.html")
+    task_list = ToDo.query.filter_by(completed=False)
+    return render_template("todo.html", tasks=task_list)
 
-# @app.route("/add", methods=["POST"])
-# def add_task():
-#     pass
+@app.route("/add", methods=["POST"])
+def add_task():
+    pass
 
 # @app.route("/delete/<int:id>", methods=["POST"])
 # def delete_task(id):
 #     task = db.get_or_404(id)
 #     pass
 
+@app.route("/complete/<int:task_id>", methods=["POST"])
+def complete_task(task_id):
+    completed_task = ToDo.query.filter_by(id=task_id).first()
+    print(completed_task)
+    completed_task.completed = True
+    db.session.commit()
+    return redirect(url_for('to_do_list'))
 
 if __name__ == "__main__":
     with app.app_context():

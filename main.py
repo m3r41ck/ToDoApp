@@ -25,16 +25,18 @@ def to_do_list():
 def add_task():
     pass
 
-# @app.route("/delete/<int:id>", methods=["POST"])
-# def delete_task(id):
-#     task = db.get_or_404(id)
-#     pass
-
 @app.route("/complete/<int:task_id>", methods=["POST"])
 def complete_task(task_id):
     completed_task = ToDo.query.filter_by(id=task_id).first()
-    print(completed_task)
-    completed_task.completed = True
+    if completed_task:
+        completed_task.completed = True
+        db.session.commit()
+    return redirect(url_for('to_do_list'))
+
+@app.route("/delete/<int:task_id>", methods=["POST"])
+def delete_task(task_id):
+    task_to_be_deleted = ToDo.query.filter_by(id=task_id).first()
+    db.session.delete(task_to_be_deleted)
     db.session.commit()
     return redirect(url_for('to_do_list'))
 

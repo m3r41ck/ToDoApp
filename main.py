@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -23,7 +23,13 @@ def to_do_list():
 
 @app.route("/add", methods=["POST"])
 def add_task():
-    pass
+    if request.method == 'POST':
+        new_task = request.form['new_task']
+        to_do_task = ToDo(title=new_task)
+        db.session.add(to_do_task)
+        db.session.commit()
+    return redirect(url_for('to_do_list'))
+    
 
 @app.route("/complete/<int:task_id>", methods=["POST"])
 def complete_task(task_id):

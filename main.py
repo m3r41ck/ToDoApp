@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -18,16 +18,19 @@ class ToDo(db.Model):
 
 @app.route("/")
 def to_do_list():
-    task_list = ToDo.query.filter_by(completed=False)
+    task_list = ToDo.query.all()
     return render_template("todo.html", tasks=task_list)
 
 @app.route("/add", methods=["POST"])
 def add_task():
     if request.method == 'POST':
-        new_task = request.form['new_task']
-        to_do_task = ToDo(title=new_task)
-        db.session.add(to_do_task)
-        db.session.commit()
+        if request.form['new_task']:
+            new_task = request.form['new_task']
+            to_do_task = ToDo(title=new_task)
+            db.session.add(to_do_task)
+            db.session.commit()
+        else:
+            return redirect(url_for('to_do_list'))
     return redirect(url_for('to_do_list'))
     
 
@@ -36,6 +39,14 @@ def complete_task(task_id):
     completed_task = ToDo.query.filter_by(id=task_id).first()
     if completed_task:
         completed_task.completed = True
+        db.session.commit()
+    return redirect(url_for('to_do_list'))
+
+@app.route("/unarchive/<int:task_id>", methods=["POST"])
+def unarchive_task(task_id):
+    completed_task = ToDo.query.filter_by(id=task_id).first()
+    if completed_task:
+        completed_task.completed = False
         db.session.commit()
     return redirect(url_for('to_do_list'))
 

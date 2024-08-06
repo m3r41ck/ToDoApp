@@ -1,27 +1,65 @@
 .gradient-custom-2 {
-    /* fallback for old browsers */
-    background: #7e40f6;
+  /* fallback for old browsers */
+  background: #7e40f6;
+
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-linear-gradient(
+    to right,
+    rgba(126, 64, 246, 1),
+    rgba(80, 139, 252, 1)
+  );
+
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(
+    to right,
+    rgba(126, 64, 246, 1),
+    rgba(80, 139, 252, 1)
+  );
+}
   
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(
-      to right,
-      rgba(126, 64, 246, 1),
-      rgba(80, 139, 252, 1)
-    );
-  
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(
-      to right,
-      rgba(126, 64, 246, 1),
-      rgba(80, 139, 252, 1)
-    );
+.mask-custom {
+  background: rgba(24, 24, 16, 0.2);
+  border-radius: 2em;
+  backdrop-filter: blur(25px);
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  background-clip: padding-box;
+  box-shadow: 10px 10px 10px rgba(46, 54, 68, 0.03);
+}
+
+#button-addon1 {
+  color: rgba(255,255,255, 0.9);
+}
+
+#chat2 {
+  background-color: transparent;
+  border: 0px;
+}
+
+#chat2 .form-control {
+  border-color: transparent;
   }
   
-  .mask-custom {
-    background: rgba(24, 24, 16, 0.2);
-    border-radius: 2em;
-    backdrop-filter: blur(25px);
-    border: 2px solid rgba(255, 255, 255, 0.05);
-    background-clip: padding-box;
-    box-shadow: 10px 10px 10px rgba(46, 54, 68, 0.03);
+  #chat2 .form-control:focus {
+  border-color: transparent;
+  box-shadow: inset 0px 0px 0px 1px transparent;
   }
+  
+  .divider:after,
+  .divider:before {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #eee;
+  }
+#chat2 .card-body{
+  overflow-y: auto;
+}
+
+#chat2 .card-header {
+  background-color: transparent;
+  color: rgba(255,255,255, 0.9)
+}
+
+#chat2 p {
+  color: rgba(255,255,255, 0.9)
+}

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -27,11 +27,15 @@ class ChatMessages(db.Model):
         return f'<User: {self.user}, Message: {self.message}, Created on: {self.created}>'
 
 
-
 @app.route("/")
 def to_do_list():
+    return render_template('todo.html')
+
+@app.route("/gettasks")
+def get_tasks():
     task_list = ToDo.query.all()
-    return render_template("todo.html", tasks=task_list)
+    tasks_data = [{'id': task.id, 'title': task.title, 'completed': task.completed} for task in task_list]
+    return jsonify(tasks_data)
 
 
 #Logic for ToDo List Manipulation
@@ -53,7 +57,7 @@ def complete_task(task_id):
     if completed_task:
         completed_task.completed = True
         db.session.commit()
-    return redirect(url_for('to_do_list'))
+    return '', 204
 
 @app.route("/unarchive/<int:task_id>", methods=["POST"])
 def unarchive_task(task_id):
@@ -63,31 +67,31 @@ def unarchive_task(task_id):
         db.session.commit()
     return redirect(url_for('to_do_list'))
 
-@app.route("/delete/<int:task_id>", methods=["POST"])
+@app.route("/delete/<int:task_id>", methods=['DELETE'])
 def delete_task(task_id):
     task_to_be_deleted = ToDo.query.filter_by(id=task_id).first()
     db.session.delete(task_to_be_deleted)
     db.session.commit()
-    return redirect(url_for('to_do_list'))
+    return '', 204
 
 
 #Logic for ChatBot Actions
 
-@app.route('/submit_message', methods=['POST'])
-def submit_message():
-    pass
+# @app.route('/submit_message', methods=['POST'])
+# def submit_message():
+#     pass
 
-@app.route('get_message', methods=['GET'])
-def get_messages():
-    pass
+# @app.route('/get_message', methods=['GET'])
+# def get_messages():
+#     pass
 
-@app.route('/clear_messages')
-def clear_messages():
-    pass
+# @app.route('/clear_messages')
+# def clear_messages():
+#     pass
 
-@app.route('get_response')
-def get_response():
-    pass
+# @app.route('get_response')
+# def get_response():
+#     pass
 
 
 if __name__ == "__main__":
@@ -96,8 +100,8 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
-
+# Update ToDo logic to handle dynamic content
 # Create JS logic for chatbot
-# Create AJAX logic for manipulation of database
+# Create logic for manipulation of database
 # Determine what ML model to use and integrate with it
 # Test

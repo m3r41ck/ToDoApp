@@ -10,8 +10,7 @@
         <div class="card mask-custom">
           <div class="card-body p-4 text-white">
             <div class="text-center pt-3 pb-2">
-              <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-todo-list/check1.webp"
-                alt="Check" width="60">
+              <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-todo-list/check1.webp" alt="Check" width="60">
               <h2 class="my-4">Task List</h2>
             </div>
             <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -22,60 +21,38 @@
                 <button class="nav-link" id="archive-tab" data-bs-toggle="tab" data-bs-target="#archived" type="button" role="tab" aria-controls="archive" aria-selected="false">Archived Tasks</button>
               </li>
             </ul>
+            <form action="{{ url_for('add_task') }}" method="POST" onsubmit="return validateForm()">
+              <div class="input-group">
+                <button class="btn gradient-custom-2" type="submit" id="button-addon1">Add Task</button>
+                <input type="text" class="form-control" name="new_task" placeholder="Write out a task here..." aria-label="Input field to add task to list" aria-describedby="button-addon1" required>
+              </div>
+            </form>
             <div class="tab-content" id="myTabContent">
               <div class="tab-pane fade show active" id="tasks" role="tabpanel" aria-labelledby="task-tab">
                 <table class="table text-white mb-0">
                   <thead>
-                  <tr>
+                    <tr>
                       <th scope="col">Task</th>
                       <th scope="col">Actions</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {% for task in tasks %}
-                    {% if task.completed == false %}
-                      <tr class="fw-normal">
-                          <td class="align-middle">
-                              <span>{{task.title}}</span>
-                          </td>
-                          <td class="align-middle">
-                              <form action="{{ url_for('complete_task', task_id=task.id) }}" method="POST" style="display:inline;">
-                                  <button type="submit" class="btn btn-link p-0" data-mdb-tooltip-init title="Complete Task">
-                                    <i class="bi bi-check-lg text-white h1"></i>
-                                  </button>
-                              </form>
-                              <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display:inline;">
-                                  <button type="submit" class="btn btn-link p-0" data-mdb-tooltip-init title="Delete Task">
-                                    <i class="bi bi-trash-fill text-white h1"></i>
-                                  </button>
-                              </form>
-                          </td>
-                      </tr>
-                    {% endif %}
-                  {% endfor %}
-                    <tr>
-                      <form action="{{ url_for('add_task') }}" method="POST" onsubmit="return validateForm()">
-                        <div class="input-group">
-                          <button class="btn gradient-custom-2" type="submit" id="button-addon1">Add Task</button>
-                          <input type="text" class="form-control" name="new_task" placeholder="Write out a task here..." aria-label="Input field to add task to list" aria-describedby="button-addon1" required>
-                        </div>
-                      </form>
                     </tr>
+                  </thead>
+                  <tbody id="task-list-body"> 
+                      <!-- Task list to populate here -->
                   </tbody>
                 </table>
               </div>
               <div class="tab-pane fade" id="archived" role="tabpanel" aria-labelledby="archived-tab">
                 <table class="table text-white mb-0">
                   <thead>
-                  <tr>
-                    <th scope="col">Task</th>
-                    <th scope="col">Actions</th>
-                  </tr>
+                    <tr>
+                      <th scope="col">Task</th>
+                      <th scope="col">Actions</th>
+                    </tr>
                   </thead>
-                  <tbody>
-                  {% for task in tasks %}
+                  <tbody id="archived-list-body">
+                  <!-- {% for task in tasks %}
                     {% if task.completed == true %}
-                      <tr class="fw-normal">
+                      <tr class="fw-normal" id="task-row-{{ task.id }}">
                           <td class="align-middle">
                             <span>{{task.title}}</span>
                           </td>
@@ -85,15 +62,13 @@
                                     <i class="bi bi-box-arrow-in-left text-white h1"></i>
                                   </button>
                               </form>
-                              <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display:inline;">
-                                  <button type="submit" class="btn btn-link p-0" data-mdb-tooltip-init title="Delete Task">
-                                    <i class="bi bi-trash-fill text-white h1"></i>
-                                  </button>
-                              </form>
+                              <button class="btn btn-link p-0" onclick="deleteTodoItem({{ task.id }})" data-mdb-tooltip-init title="Delete Task">
+                                <i class="bi bi-trash-fill text-white h1"></i>
+                              </button>
                           </td>
                       </tr>
-                      {% endif %}
-                  {% endfor %}
+                    {% endif %}
+                  {% endfor %} -->
                   </tbody>
                 </table>
               </div>

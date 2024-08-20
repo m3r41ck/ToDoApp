@@ -41,15 +41,12 @@ def get_tasks():
 #Logic for ToDo List Manipulation
 @app.route("/add", methods=["POST"])
 def add_task():
-    if request.method == 'POST':
-        if request.form['new_task']:
-            new_task = request.form['new_task']
-            to_do_task = ToDo(title=new_task)
-            db.session.add(to_do_task)
-            db.session.commit()
-        else:
-            return redirect(url_for('to_do_list'))
-    return redirect(url_for('to_do_list'))
+    data = request.get_json()
+    new_task = ToDo(title=data['title'], completed=False)
+    db.session.add(new_task)
+    db.session.commit()
+    return jsonify({'id': new_task.id, 'title': new_task.title, 'completed': new_task.completed})
+
     
 @app.route("/complete/<int:task_id>", methods=["POST"])
 def complete_task(task_id):
@@ -100,8 +97,7 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
-# Update ToDo logic to handle dynamic content
+
 # Create JS logic for chatbot
-# Create logic for manipulation of database
 # Determine what ML model to use and integrate with it
 # Test

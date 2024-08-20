@@ -21,10 +21,10 @@
                 <button class="nav-link" id="archive-tab" data-bs-toggle="tab" data-bs-target="#archived" type="button" role="tab" aria-controls="archive" aria-selected="false">Archived Tasks</button>
               </li>
             </ul>
-            <form action="{{ url_for('add_task') }}" method="POST" onsubmit="return validateForm()">
+            <form id="add-task-form">
               <div class="input-group">
                 <button class="btn gradient-custom-2" type="submit" id="button-addon1">Add Task</button>
-                <input type="text" class="form-control" name="new_task" placeholder="Write out a task here..." aria-label="Input field to add task to list" aria-describedby="button-addon1" required>
+                <input id="task-title" type="text" class="form-control" name="new_task" placeholder="Write out a task here..." aria-label="Input field to add task to list" aria-describedby="button-addon1" required>
               </div>
             </form>
             <div class="tab-content" id="myTabContent">
@@ -37,7 +37,7 @@
                     </tr>
                   </thead>
                   <tbody id="task-list-body"> 
-                      <!-- Task list to populate here -->
+                    <!-- Task list to populate here -->
                   </tbody>
                 </table>
               </div>
@@ -50,25 +50,7 @@
                     </tr>
                   </thead>
                   <tbody id="archived-list-body">
-                  <!-- {% for task in tasks %}
-                    {% if task.completed == true %}
-                      <tr class="fw-normal" id="task-row-{{ task.id }}">
-                          <td class="align-middle">
-                            <span>{{task.title}}</span>
-                          </td>
-                          <td class="align-middle">
-                              <form action="{{ url_for('unarchive_task', task_id=task.id) }}" method="POST" style="display:inline;">
-                                  <button type="submit" class="btn btn-link p-0" data-mdb-tooltip-init title="Uncomplete Task">
-                                    <i class="bi bi-box-arrow-in-left text-white h1"></i>
-                                  </button>
-                              </form>
-                              <button class="btn btn-link p-0" onclick="deleteTodoItem({{ task.id }})" data-mdb-tooltip-init title="Delete Task">
-                                <i class="bi bi-trash-fill text-white h1"></i>
-                              </button>
-                          </td>
-                      </tr>
-                    {% endif %}
-                  {% endfor %} -->
+                    <!-- Archived task list to populate here -->
                   </tbody>
                 </table>
               </div>

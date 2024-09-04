@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -21,7 +22,7 @@ class ChatMessages(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user = db.Column(db.String, nullable=False)
     message = db.Column(db.Text, nullable=False)
-    created = db.Column(db.DateTime, default=False)
+    created = db.Column(db.DateTime, default=datetime.now())
 
     def __repr__(self):
         return f'<User: {self.user}, Message: {self.message}, Created on: {self.created}>'
@@ -73,14 +74,20 @@ def delete_task(task_id):
 
 
 #Logic for ChatBot Actions
+@app.route('/getmessages', methods=['GET'])
+def getmessages():
+    message_list = ChatMessages.query.all()
+    messages_data = [{'id': message.id, 'message': message.message, 'user': message.user, 'created_on': message.created} for message in message_list]
+    return jsonify(messages_data)
 
-# @app.route('/submit_message', methods=['POST'])
-# def submit_message():
-#     pass
+@app.route('/submit_message', methods=['POST'])
+def submit_message():
+    data = request.get_json()
+    new_message = ChatMessages(user=data['user'], message=data['message'])
+    db.session.add(new_message)
+    db.session.commit()
+    return jsonify({'user': new_message.user, 'message': new_message.message})
 
-# @app.route('/get_message', methods=['GET'])
-# def get_messages():
-#     pass
 
 # @app.route('/clear_messages')
 # def clear_messages():

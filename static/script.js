@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     loadTodoItems()
+    loadChatMessages()
+
     document.querySelector('#add-task-form').addEventListener('submit', function(event) {
         event.preventDefault();
 
@@ -19,19 +21,41 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .catch(error => console.error('Error: ', error));
     });
+
+    document.querySelector('#chat-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const chatInput = document.getElementById('chat-input');
+        const message = chatInput.value;
+
+        if (!message.trim()) return;
+
+        fetch('/submit_message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({message: message, user: 'user'})
+        })
+        .then(response => response.json())
+        .then(newMessage => {
+            displayNewMessage(newMessage)
+            chatInput.value = '';
+        })
+    })
 })
 
-
+// Task List Logic
 function loadTodoItems() {
     fetch('/gettasks')
         .then(response => response.json())
-        .then(task_list => {
+        .then(task_data => {
             const taskListBody = document.querySelector('#task-list-body');
             const archivedListBody = document.querySelector('#archived-list-body');
             taskListBody.innerHTML = '';
             archivedListBody.innerHTML = '';
 
-            task_list.forEach(task => {
+            task_data.forEach(task => {
                 if (!task.completed) {
 
                     const row = document.createElement('tr');
@@ -208,7 +232,6 @@ function createNewToDoItem(task) {
     taskListBody.appendChild(row);
 }
 
-
 function completeTodoItem(task_id) {
     fetch(`/complete/${task_id}`, {
         method: 'POST',
@@ -226,7 +249,6 @@ function completeTodoItem(task_id) {
     })
     .catch(error => console.error('Error', error));
 }
-
 // Delete todo item
 function deleteTodoItem(task_id) {
     fetch(`/delete/${task_id}`, {
@@ -245,7 +267,6 @@ function deleteTodoItem(task_id) {
     })
     .catch(error => console.error('Error: ', error));
 }
-
 // Unarchive todo item
 function unarchiveTodoItem(task_id) {
     fetch(`/unarchive/${task_id}`, {
@@ -265,11 +286,95 @@ function unarchiveTodoItem(task_id) {
     .catch(error => console.error('Error: ', error));
 }
 
+// Chatbot Logic
+function loadChatMessages() {
+    fetch('/getmessages')
+        .then(response => response.json())
+        .then(messages_data => {
+            displayAllMessages(messages_data);
+        })
+        .catch(error => console.error ('Error loading messages:', error));
+}
 
-// chatField.addEventListener("submit", function(event) {
-//     event.preventDefault();
-//     const message =  chatInputField.value;
-//     fetch()
-//     console.log("Message submitted:", message)
-//     document.getElementById('chat-input').value = '';
-// })
+function displayAllMessages(messages) {
+    const chatBody = document.getElementById('chat-body');
+
+    // Create only one div for each user and assistant session
+    const userDiv = document.createElement('div');
+    userDiv.className = 'd-flex flex-row justify-content-start';
+    const userMessageDiv = document.createElement('div'); // Div to hold all user messages
+
+    const assistantDiv = document.createElement('div');
+    assistantDiv.className = 'd-flex flex-row justify-content-end mb-4 pt-1';
+    const assistantMessageDiv = document.createElement('div'); // Div to hold all assistant messages
+
+    messages.forEach(message => {
+        const p = document.createElement('p');
+        p.className = message.user === 'user' ? 'small p-2 ms-3 mb-1 rounded-3 bg-body-tertiary' : 'small p-2 me-3 mb-1 text-white rounded-3 bg-primary';
+        p.textContent = message.message;
+        
+        if (message.user === 'user') {
+            userMessageDiv.appendChild(p);
+        } else {
+            assistantMessageDiv.appendChild(p);
+        }
+    });
+
+    if (userMessageDiv.hasChildNodes()) {
+        const img = document.createElement('img');
+        img.src = "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3-bg.webp";
+        img.alt = "avatar 1";
+        img.style.width = "45px";
+        img.style.height = "100%";
+        userDiv.appendChild(img);
+        userDiv.appendChild(userMessageDiv);
+        chatBody.appendChild(userDiv);
+    }
+
+    if (assistantMessageDiv.hasChildNodes()) {
+        const img = document.createElement('img');
+        img.src = "{{ url_for('static', filename='robot.png') }}";  // Adjust path as necessary
+        img.alt = "avatar 1";
+        img.style.width = "45px";
+        img.style.height = "100%";
+        assistantDiv.appendChild(assistantMessageDiv);
+        assistantDiv.appendChild(img);
+        chatBody.appendChild(assistantDiv);
+    }
+}
+
+function displayNewMessage(message) {
+    const chatBody = document.getElementById('chat-body');
+    const message_input = document.getElementById('chat-input');
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = message.user === 'user' ? 'd-flex flex-row justify-content-start' : 'd-flex flex-row justify-content-end mb-4 pt-1';
+
+    const contentDiv = document.createElement('div');
+
+    const p = document.createElement('p');
+    p.className = message.user === 'user' ? 'small p-2 ms-3 mb-1 rounded-3 bg-body-tertiary' : 'small p-2 me-3 mb-1 text-white rounded-3 bg-primary';
+    p.textContent = message.message;
+
+    contentDiv.appendChild(p);
+
+    const img = document.createElement('img');
+    img.src = message.user === 'user' ? "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3-bg.webp" : "{{ url_for('static', filename='robot.png') }}";  // Adjust path as necessary
+    img.alt = "avatar";
+    img.style.width = "45px";
+    img.style.height = "100%";
+
+
+    if (message.user === 'user') {
+        messageDiv.appendChild(img); 
+        messageDiv.appendChild(contentDiv);
+    } else {
+        messageDiv.appendChild(contentDiv);  
+        messageDiv.appendChild(img);
+    }
+
+
+    chatBody.appendChild(messageDiv);
+
+    chatBody.scrollTop = chatBody.scrollHeight;
+}

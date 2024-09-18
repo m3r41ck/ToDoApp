@@ -1,17 +1,12 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from dotenv import load_dotenv
-import google.generativeai as genai
-import os
 
-load_dotenv()
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_DATABASE_URI")
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///todo.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-genai.configure(api_key=os.environ['BARD_API'])
 
 
 # DB Schema Logic
@@ -91,7 +86,6 @@ def submit_message():
     new_message = ChatMessages(user=data['user'], message=data['message'])
     db.session.add(new_message)
     db.session.commit()
-    print("Message submitted successfully!")
     return jsonify({'user': new_message.user, 'message': new_message.message})
 
 
